@@ -1,3 +1,4 @@
+from create_model import test
 from flask.wrappers import Request
 from sklearn.model_selection import train_test_split
 import numpy as np
@@ -11,7 +12,8 @@ from flask import *
 from flask import request as flask_request
 from flask_cors import CORS
 import pickle
-
+import sys
+sys.path.insert(0, './Model/')
 app = Flask(__name__)
 CORS(app)
 
@@ -66,6 +68,7 @@ pickle.dump(rf_clf, open(filename, 'wb'))
 print_score(rf_clf, X_test, y_test)
 # print(prediction[0])
 
+
 @app.route("/getresults", methods=['GET'])
 def getresults():
     age: float = float(flask_request.args.get('age'))
@@ -85,8 +88,8 @@ def getresults():
     testarray2 = np.zeros((1, 30))
     testDict = {}
     testDict.update({"sex": sex,
-                 "cp": cp, "fbs": fbs, "restecg": restecg,
-                 "exang": exang, "slope": slope, "ca": ca, "thal": thal})
+                     "cp": cp, "fbs": fbs, "restecg": restecg,
+                     "exang": exang, "slope": slope, "ca": ca, "thal": thal})
     testarray2[0, 0] = age
     testarray2[0, 1] = trestbps
     testarray2[0, 2] = chol
@@ -160,6 +163,7 @@ def getresults():
     loaded_model = pickle.load(open(filename, 'rb'))
     prediction = loaded_model.predict(dfTest)
     return jsonify({"Prediction": str(prediction[0])})
+
 
 if __name__ == "__main__":
     app.run()
